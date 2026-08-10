@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Une question pour toi 💌</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,600&family=Quicksand:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --rose-deep: #7A2E4D;
+      --rose-mid: #B4577A;
+      --blush: #FBD8E3;
+      --peach: #FFB4A2;
+      --cream: #FFF6F0;
+      --gold: #E3A857;
+      --plum: #3A1220;
+      --white: #FFFFFF;
+      --shadow: 0 10px 30px rgba(122, 46, 77, 0.18);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Quicksand', sans-serif;
+      background: radial-gradient(circle at 20% 10%, #FFE7DE 0%, var(--cream) 45%, #FBDDE7 100%);
+      color: var(--plum);
+      overflow: hidden;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    #hearts {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .float-heart {
+      position: absolute;
+      bottom: -40px;
+      font-size: 20px;
+      opacity: 0.55;
+      animation: rise linear forwards;
+    }
+
+    @keyframes rise {
+      to {
+        transform: translateY(-115vh) rotate(30deg);
+        opacity: 0;
+      }
+    }
+
+    #app {
+      position: relative;
+      z-index: 1;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 18px 20px 24px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 34px;
+    }
+
+    #backBtn {
+      background: none;
+      border: none;
+      color: var(--rose-deep);
+      font-family: 'Quicksand';
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      padding: 6px 4px;
+      visibility: hidden;
+    }
+
+    #logo {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 15px;
+      color: var(--rose-mid);
+      letter-spacing: .5px;
+      user-select: none;
+      cursor: default;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    #dots {
+      display: flex;
+      gap: 7px;
+      visibility: hidden;
+      justify-content: center;
+      margin: 2px 0 0;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--blush);
+      transition: .3s;
+    }
+
+    .dot.active {
+      background: var(--rose-deep);
+      width: 20px;
+      border-radius: 5px;
+    }
+
+    .dot.done {
+      background: var(--peach);
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+    }
+
+    .screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 22px;
+      animation: enter .5s cubic-bezier(.2, .9, .25, 1);
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    @keyframes enter {
+      from {
+        opacity: 0;
+        transform: translateY(18px) scale(.98);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: clamp(24px, 7vw, 32px);
+      line-height: 1.25;
+      color: var(--rose-deep);
+      margin: 0;
+    }
+
+    .subtitle {
+      font-size: 15px;
+      color: var(--rose-mid);
+      font-weight: 500;
+      margin: -10px 0 0;
+    }
+
+    .emoji-big {
+      font-size: 52px;
+      filter: drop-shadow(0 6px 10px rgba(122, 46, 77, .2));
+    }
+
+    /* SCREEN 1 : la fameuse question */
+    #s1 {
+      gap: 34px;
+    }
+
+    #choiceZone {
+      position: relative;
+      width: 100%;
+      height: 190px;
+    }
+
+    .btn {
+      font-family: 'Quicksand';
+      font-weight: 700;
+      font-size: 18px;
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+      padding: 16px 38px;
+      transition: transform .15s ease;
+    }
+
+    .btn:active {
+      transform: scale(.95);
+    }
+
+    #yesBtn {
+      background: linear-gradient(135deg, var(--rose-deep), var(--rose-mid));
+      color: var(--white);
+      box-shadow: var(--shadow);
+      position: absolute;
+      left: 50%;
+      top: 20px;
+      transform: translateX(-50%);
+      animation: pulse 1.8s ease-in-out infinite;
+      z-index: 2;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        box-shadow: 0 10px 30px rgba(122, 46, 77, .18);
+      }
+
+      50% {
+        box-shadow: 0 10px 34px rgba(122, 46, 77, .38);
+      }
+    }
+
+    #noBtn {
+      background: var(--white);
+      color: var(--rose-mid);
+      border: 2px solid var(--blush);
+      position: absolute;
+      left: 50%;
+      top: 110px;
+      transform: translateX(-50%);
+      transition: left .28s ease, top .28s ease, transform .2s ease;
+      z-index: 1;
+      font-size: 15px;
+      padding: 12px 26px;
+    }
+
+    #noTaunt {
+      min-height: 20px;
+      font-size: 13px;
+      color: var(--rose-mid);
+      font-style: italic;
+      font-weight: 600;
+    }
+
+    /* SCREEN 2 : lieu */
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      width: 100%;
+    }
+
+    .option-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--white);
+      border: 2px solid var(--blush);
+      border-radius: 20px;
+      padding: 16px 18px;
+      cursor: pointer;
+      text-align: left;
+      transition: .2s;
+    }
+
+    .option-card .ico {
+      font-size: 30px;
+    }
+
+    .option-card .txt strong {
+      display: block;
+      font-size: 16px;
+      color: var(--plum);
+    }
+
+    .option-card .txt span {
+      font-size: 13px;
+      color: var(--rose-mid);
+    }
+
+    .option-card.selected {
+      border-color: var(--rose-deep);
+      background: linear-gradient(135deg, #fff, #FFF0F4);
+      box-shadow: var(--shadow);
+      transform: translateY(-2px);
+    }
+
+    /* SCREEN 3 : date */
+    .date-picker {
+      background: var(--white);
+      border: 2px solid var(--blush);
+      border-radius: 20px;
+      padding: 20px;
+      width: 100%;
+    }
+
+    input[type=date],
+    input[type=time] {
+      width: 100%;
+      border: 2px solid var(--blush);
+      border-radius: 14px;
+      padding: 14px;
+      font-family: 'Quicksand';
+      font-weight: 600;
+      font-size: 16px;
+      color: var(--plum);
+      background: var(--cream);
+    }
+
+    input[type=date]:focus,
+    input[type=time]:focus {
+      outline: 2px solid var(--rose-mid);
+    }
+
+    /* SCREEN 4 : creneau */
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 4px;
+    }
+
+    .chip {
+      background: var(--blush);
+      color: var(--rose-deep);
+      border: none;
+      border-radius: 999px;
+      padding: 9px 16px;
+      font-family: 'Quicksand';
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .chip.selected {
+      background: var(--rose-deep);
+      color: var(--white);
+    }
+
+    .time-row {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+      align-items: center;
+    }
+
+    .time-row .field {
+      flex: 1;
+      text-align: left;
+    }
+
+    .time-row label {
+      font-size: 12px;
+      color: var(--rose-mid);
+      font-weight: 600;
+      margin-left: 4px;
+    }
+
+    /* SCREEN 5 : resume */
+    .summary-card {
+      background: var(--white);
+      border: 2px solid var(--blush);
+      border-radius: 22px;
+      padding: 22px;
+      width: 100%;
+      box-shadow: var(--shadow);
+      text-align: left;
+    }
+
+    .summary-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px dashed var(--blush);
+    }
+
+    .summary-row:last-child {
+      border-bottom: none;
+    }
+
+    .summary-row .ico {
+      font-size: 22px;
+      width: 28px;
+      text-align: center;
+    }
+
+    .summary-row .lab {
+      font-size: 12px;
+      color: var(--rose-mid);
+      font-weight: 600;
+    }
+
+    .summary-row .val {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--plum);
+    }
+
+    .primary-cta {
+      width: 100%;
+      background: linear-gradient(135deg, var(--rose-deep), var(--rose-mid));
+      color: var(--white);
+      box-shadow: var(--shadow);
+    }
+
+    .primary-cta:disabled {
+      opacity: .4;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .ghost-cta {
+      background: none;
+      border: none;
+      color: var(--rose-mid);
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    #doneScreen .emoji-big {
+      animation: bounce 1.4s ease-in-out infinite;
+    }
+
+    @keyframes bounce {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    footer {
+      min-height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Admin */
+    #admin {
+      position: fixed;
+      inset: 0;
+      background: rgba(58, 18, 32, .92);
+      z-index: 50;
+      display: none;
+      flex-direction: column;
+      color: #fff;
+      padding: 20px;
+      overflow-y: auto;
+      font-family: 'Quicksand';
+    }
+
+    #admin.active {
+      display: flex;
+    }
+
+    #admin h2 {
+      font-family: 'Playfair Display';
+      margin: 0 0 4px;
+    }
+
+    #admin .close {
+      align-self: flex-end;
+      background: none;
+      border: 1px solid #fff;
+      color: #fff;
+      border-radius: 10px;
+      padding: 6px 12px;
+      cursor: pointer;
+      margin-bottom: 14px;
+    }
+
+    .sess-card {
+      background: rgba(255, 255, 255, .08);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 12px;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .sess-card b {
+      color: var(--peach);
+    }
+
+    #adminStats {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    #adminStats div {
+      background: rgba(255, 255, 255, .1);
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 12px;
+    }
+
+    #adminStats b {
+      font-size: 18px;
+      display: block;
+      color: var(--gold);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="hearts"></div>
+
+  <div id="app">
+    <header>
+      <button id="backBtn">‹ Retour</button>
+      <div id="logo">💌</div>
+      <div style="width:60px"></div>
+    </header>
+    <div id="dots">
+      <div class="dot" data-n="2"></div>
+      <div class="dot" data-n="3"></div>
+      <div class="dot" data-n="4"></div>
+      <div class="dot" data-n="5"></div>
+    </div>
+
+    <main>
+      <!-- SCREEN 1 -->
+      <section class="screen active" id="s1">
+        <div class="emoji-big">💕</div>
+        <h1>Est-ce que tu acceptes<br>un date avec moi ?</h1>
+        <div id="choiceZone">
+          <button class="btn" id="yesBtn">Oui 🥰</button>
+          <button class="btn" id="noBtn">Non</button>
+        </div>
+        <div id="noTaunt">&nbsp;</div>
+      </section>
+
+      <!-- SCREEN 2 -->
+      <section class="screen" id="s2">
+        <h1>Où veux-tu qu'on aille ? 🎀</h1>
+        <p class="subtitle">Choisis ce qui te fait le plus envie</p>
+        <div class="options" id="placeOptions">
+          <div class="option-card" data-value="Restaurant">
+            <div class="ico">🍝</div>
+            <div class="txt"><strong>Restaurant</strong><span>Un bon dîner en tête à tête</span></div>
+          </div>
+          <div class="option-card" data-value="Cinéma">
+            <div class="ico">🎬</div>
+            <div class="txt"><strong>Cinéma</strong><span>Un film, du popcorn, et toi</span></div>
+          </div>
+          <div class="option-card" data-value="Journée à Jacqueville">
+            <div class="ico">🏖️</div>
+            <div class="txt"><strong>Journée à Jacqueville</strong><span>Plage, soleil et bonne humeur</span></div>
+          </div>
+        </div>
+        <button class="btn primary-cta" id="next2" disabled>Continuer →</button>
+      </section>
+
+      <!-- SCREEN 3 -->
+      <section class="screen" id="s3">
+        <h1>Quel jour te convient ? 📅</h1>
+        <p class="subtitle">Choisis une date qui t'arrange</p>
+        <div class="date-picker">
+          <input type="date" id="dateInput">
+        </div>
+        <button class="btn primary-cta" id="next3" disabled>Continuer →</button>
+      </section>
+
+      <!-- SCREEN 4 -->
+      <section class="screen" id="s4">
+        <h1>À quelle heure ? ⏰</h1>
+        <p class="subtitle">Choisis un créneau, ou personnalise-le</p>
+        <div class="chips" id="presetChips">
+          <button class="chip" data-from="12:00" data-to="14:00">🍽️ Midi</button>
+          <button class="chip" data-from="15:00" data-to="18:00">☀️ Après-midi</button>
+          <button class="chip" data-from="19:00" data-to="22:00">🌙 Soirée</button>
+        </div>
+        <div class="time-row">
+          <div class="field"><label>De</label><input type="time" id="timeFrom"></div>
+          <div class="field"><label>À</label><input type="time" id="timeTo"></div>
+        </div>
+        <button class="btn primary-cta" id="next4" disabled>Voir le résumé →</button>
+      </section>
+
+      <!-- SCREEN 5 -->
+      <section class="screen" id="s5">
+        <h1>C'est presque prêt ✨</h1>
+        <div class="summary-card">
+          <div class="summary-row">
+            <div class="ico">💕</div>
+            <div>
+              <div class="lab">Réponse</div>
+              <div class="val" id="sumAnswer">Oui</div>
+            </div>
+          </div>
+          <div class="summary-row">
+            <div class="ico">📍</div>
+            <div>
+              <div class="lab">Lieu</div>
+              <div class="val" id="sumPlace">—</div>
+            </div>
+          </div>
+          <div class="summary-row">
+            <div class="ico">📅</div>
+            <div>
+              <div class="lab">Date</div>
+              <div class="val" id="sumDate">—</div>
+            </div>
+          </div>
+          <div class="summary-row">
+            <div class="ico">⏰</div>
+            <div>
+              <div class="lab">Heure</div>
+              <div class="val" id="sumTime">—</div>
+            </div>
+          </div>
+        </div>
+        <button class="btn primary-cta" id="confirmBtn">Confirmer notre date 💌</button>
+      </section>
+
+      <!-- DONE -->
+      <section class="screen" id="doneScreen">
+        <div class="emoji-big">🎉</div>
+        <h1>C'est noté !</h1>
+        <p class="subtitle">On se voit bientôt 💕</p>
+      </section>
+    </main>
+
+    <footer></footer>
+  </div>
+
+  <!-- ADMIN DASHBOARD -->
+  <div id="admin">
+    <div style="display:flex;gap:8px;align-self:flex-end;margin-bottom:14px;">
+      <button class="close" id="resetBtn" style="border-color:#ff8a8a;color:#ff8a8a;margin-bottom:0;">Réinitialiser
+        🗑️</button>
+      <button class="close" id="adminClose" style="margin-bottom:0;">Fermer ✕</button>
+    </div>
+    <h2>Tableau de bord 🔐</h2>
+    <p class="subtitle" style="color:#f0c;opacity:.7">Statistiques de visite</p>
+    <div id="adminStats"></div>
+    <div id="openLogBlock" style="margin-bottom:16px;"></div>
+    <div id="adminSessions"></div>
+  </div>
+
+  <script>
+    (function () {
+      // ---------- FLOATING HEARTS BACKGROUND ----------
+      const heartsContainer = document.getElementById('hearts');
+      const heartEmojis = ['💗', '💕', '💖', '🌸', '✨'];
+      function spawnHeart() {
+        const el = document.createElement('div');
+        el.className = 'float-heart';
+        el.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+        el.style.left = Math.random() * 100 + '%';
+        el.style.fontSize = (14 + Math.random() * 16) + 'px';
+        const dur = 8 + Math.random() * 8;
+        el.style.animationDuration = dur + 's';
+        heartsContainer.appendChild(el);
+        setTimeout(() => el.remove(), dur * 1000 + 200);
+      }
+      setInterval(spawnHeart, 900);
+      for (let i = 0; i < 4; i++) setTimeout(spawnHeart, i * 300);
+
+      // ==========================================================================
+      // CONFIGURATION FIREBASE — À FAIRE AVANT DE PUBLIER LE LIEN
+      // 1. Va sur https://console.firebase.google.com → "Ajouter un projet" (gratuit)
+      // 2. Menu de gauche → Build → Realtime Database → "Créer une base de données"
+      // 3. Choisis une région, démarre en mode test
+      // 4. Dans l'onglet "Règles" de la base, remplace par :
+      //      { "rules": { ".read": true, ".write": true } }
+      //    (sinon l'accès expire au bout de 30 jours)
+      // 5. Copie l'URL affichée en haut de la page Realtime Database
+      //    (ex: https://mon-projet-default-rtdb.europe-west1.firebasedatabase.app)
+      //    et colle-la ci-dessous à la place du texte entre guillemets.
+      // ==========================================================================
+      const FIREBASE_DB_URL = "https://date-6bfb0-default-rtdb.europe-west1.firebasedatabase.app/";
+
+      const FB_CONFIGURED = FIREBASE_DB_URL && FIREBASE_DB_URL.startsWith('https://') && FIREBASE_DB_URL.includes('firebasedatabase.app');
+
+      let writesDisabled = false;
+      function fbPath(key) {
+        return FIREBASE_DB_URL.replace(/\/$/, '') + '/kv/' + encodeURIComponent(key) + '.json';
+      }
+      const storage = {
+        async set(key, value) {
+          if (writesDisabled || !FB_CONFIGURED) return null;
+          try {
+            const res = await fetch(fbPath(key), {method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(value)});
+            if (!res.ok) return null;
+            return {key, value};
+          } catch (e) {return null;}
+        },
+        async get(key) {
+          if (!FB_CONFIGURED) throw new Error('Firebase non configuré');
+          const res = await fetch(fbPath(key));
+          if (!res.ok) throw new Error('Échec de lecture');
+          const data = await res.json();
+          if (data === null || data === undefined) throw new Error('Clé introuvable');
+          return {key, value: data};
+        },
+        async delete(key) {
+          if (!FB_CONFIGURED) return null;
+          try {
+            const res = await fetch(fbPath(key), {method: 'DELETE'});
+            if (!res.ok) return null;
+            return {key, deleted: true};
+          } catch (e) {return null;}
+        },
+        async list(prefix) {
+          if (!FB_CONFIGURED) return {keys: [], prefix};
+          try {
+            const res = await fetch(FIREBASE_DB_URL.replace(/\/$/, '') + '/kv.json?shallow=true');
+            if (!res.ok) return {keys: [], prefix};
+            const data = await res.json();
+            const allKeys = data ? Object.keys(data).map(k => decodeURIComponent(k)) : [];
+            const filtered = prefix ? allKeys.filter(k => k.startsWith(prefix)) : allKeys;
+            return {keys: filtered, prefix};
+          } catch (e) {return {keys: [], prefix};}
+        }
+      };
+      window.storage = storage; // compat avec le reste du code
+      const sessionId = 'session:' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
+      const state = {
+        openedAt: new Date().toISOString(),
+        device: {
+          userAgent: navigator.userAgent,
+          platform: navigator.platform || '',
+          language: navigator.language,
+          screen: screen.width + 'x' + screen.height,
+          viewport: window.innerWidth + 'x' + window.innerHeight,
+          connection: (navigator.connection && navigator.connection.effectiveType) || 'n/a',
+          isTouch: 'ontouchstart' in window
+        },
+        noAttempts: 0,
+        screenTimesMs: {s1: 0, s2: 0, s3: 0, s4: 0, s5: 0},
+        answers: {place: null, date: null, from: null, to: null},
+        completed: false,
+        completedAt: null,
+        lastUpdate: new Date().toISOString()
+      };
+
+      let storageOk = true;
+      async function saveSession() {
+        try {
+          const r = await window.storage.set(sessionId, JSON.stringify(state), true);
+          if (!r) storageOk = false;
+        } catch (e) {storageOk = false;}
+      }
+      const params = new URLSearchParams(location.search);
+      const skipCount = params.get('noanalytics') === '1';
+      if (skipCount) {
+        history.replaceState({}, '', location.pathname);
+      }
+      async function bumpOpenCount() {
+        if (skipCount) return;
+        try {
+          let count = 0;
+          try {
+            const existing = await window.storage.get('open_count', true);
+            count = existing ? parseInt(existing.value, 10) || 0 : 0;
+          } catch (e) {count = 0;}
+          count += 1;
+          await window.storage.set('open_count', String(count), true);
+        } catch (e) { }
+        try {
+          let log = [];
+          try {
+            const existing = await window.storage.get('open_log', true);
+            log = existing ? JSON.parse(existing.value) : [];
+          } catch (e) {log = [];}
+          log.push(new Date().toISOString());
+          if (log.length > 300) log = log.slice(log.length - 300);
+          await window.storage.set('open_log', JSON.stringify(log), true);
+        } catch (e) { }
+      }
+      bumpOpenCount();
+      saveSession();
+
+      let currentScreenKey = 's1';
+      let screenStart = Date.now();
+      function recordScreenTime() {
+        const elapsed = Date.now() - screenStart;
+        state.screenTimesMs[currentScreenKey] = (state.screenTimesMs[currentScreenKey] || 0) + elapsed;
+      }
+      function switchToScreen(key) {
+        recordScreenTime();
+        currentScreenKey = key;
+        screenStart = Date.now();
+        state.lastUpdate = new Date().toISOString();
+        saveSession();
+      }
+      window.addEventListener('visibilitychange', () => {
+        if (document.hidden) {recordScreenTime(); saveSession();}
+        else {screenStart = Date.now();}
+      });
+      window.addEventListener('pagehide', () => {recordScreenTime(); saveSession();});
+
+      // ---------- NAVIGATION ----------
+      const screens = ['s1', 's2', 's3', 's4', 's5'];
+      const dotsEl = document.getElementById('dots');
+      const backBtn = document.getElementById('backBtn');
+      let historyStack = ['s1'];
+
+      function showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        switchToScreen(id);
+        const idx = screens.indexOf(id);
+        if (idx > 0) {
+          dotsEl.style.visibility = 'visible';
+          document.querySelectorAll('.dot').forEach(d => {
+            const n = parseInt(d.dataset.n, 10);
+            d.classList.toggle('active', n === idx + 1);
+            d.classList.toggle('done', n < idx + 1);
+          });
+          backBtn.style.visibility = 'visible';
+        } else {
+          dotsEl.style.visibility = 'hidden';
+          backBtn.style.visibility = 'hidden';
+        }
+      }
+      function goTo(id) {
+        historyStack.push(id);
+        showScreen(id);
+      }
+      backBtn.addEventListener('click', () => {
+        if (historyStack.length > 1) {
+          historyStack.pop();
+          const prev = historyStack[historyStack.length - 1];
+          showScreen(prev);
+        }
+      });
+
+      // ---------- SCREEN 1 : la question ----------
+      const choiceZone = document.getElementById('choiceZone');
+      const noBtn = document.getElementById('noBtn');
+      const yesBtn = document.getElementById('yesBtn');
+      const noTaunt = document.getElementById('noTaunt');
+      const taunts = [
+        "Essaie encore 😏", "Trop lent 😅", "Presque ! ... non 🙈", "Il va falloir dire oui 💕",
+        "Ce bouton n'existe pas vraiment 😇", "Tu perds ton temps 😌", "Allez, dis oui 🥺", "Non n'est pas une option 💌"
+      ];
+      function dodge() {
+        const zw = choiceZone.clientWidth, zh = choiceZone.clientHeight;
+        const bw = noBtn.offsetWidth, bh = noBtn.offsetHeight;
+        const maxLeft = Math.max(zw - bw, 40);
+        const maxTop = Math.max(zh - bh, 60);
+        const newLeft = Math.random() * maxLeft;
+        const newTop = 60 + Math.random() * (maxTop - 60);
+        noBtn.style.left = newLeft + (bw / 2) + 'px';
+        noBtn.style.top = newTop + 'px';
+        noBtn.style.transform = 'translateX(-50%) rotate(' + (Math.random() * 16 - 8) + 'deg)';
+        state.noAttempts += 1;
+        noTaunt.textContent = taunts[Math.floor(Math.random() * taunts.length)];
+        saveSession();
+      }
+      ['pointerenter', 'pointerdown', 'touchstart', 'click'].forEach(evt => {
+        noBtn.addEventListener(evt, function (e) {
+          e.preventDefault();
+          dodge();
+        }, {passive: false});
+      });
+
+      function burstHearts() {
+        for (let i = 0; i < 18; i++) {
+          setTimeout(() => {
+            const el = document.createElement('div');
+            el.className = 'float-heart';
+            el.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+            el.style.left = (35 + Math.random() * 30) + '%';
+            el.style.bottom = '30%';
+            el.style.fontSize = (18 + Math.random() * 22) + 'px';
+            el.style.animationDuration = (2 + Math.random() * 1.5) + 's';
+            heartsContainer.appendChild(el);
+            setTimeout(() => el.remove(), 3500);
+          }, i * 40);
+        }
+      }
+      yesBtn.addEventListener('click', () => {
+        burstHearts();
+        yesBtn.disabled = true;
+        setTimeout(() => {goTo('s2');}, 700);
+      });
+
+      // ---------- SCREEN 2 : lieu ----------
+      const placeCards = document.querySelectorAll('#placeOptions .option-card');
+      const next2 = document.getElementById('next2');
+      placeCards.forEach(card => {
+        card.addEventListener('click', () => {
+          placeCards.forEach(c => c.classList.remove('selected'));
+          card.classList.add('selected');
+          state.answers.place = card.dataset.value;
+          next2.disabled = false;
+          saveSession();
+        });
+      });
+      next2.addEventListener('click', () => goTo('s3'));
+
+      // ---------- SCREEN 3 : date ----------
+      const dateInput = document.getElementById('dateInput');
+      const next3 = document.getElementById('next3');
+      const todayStr = new Date().toISOString().split('T')[0];
+      dateInput.min = todayStr;
+      dateInput.addEventListener('change', () => {
+        if (dateInput.value) {
+          state.answers.date = dateInput.value;
+          next3.disabled = false;
+          saveSession();
+        }
+      });
+      next3.addEventListener('click', () => goTo('s4'));
+
+      // ---------- SCREEN 4 : creneau ----------
+      const chips = document.querySelectorAll('.chip');
+      const timeFrom = document.getElementById('timeFrom');
+      const timeTo = document.getElementById('timeTo');
+      const next4 = document.getElementById('next4');
+      function checkTimeValid() {
+        next4.disabled = !(timeFrom.value && timeTo.value);
+      }
+      chips.forEach(chip => {
+        chip.addEventListener('click', () => {
+          chips.forEach(c => c.classList.remove('selected'));
+          chip.classList.add('selected');
+          timeFrom.value = chip.dataset.from;
+          timeTo.value = chip.dataset.to;
+          checkTimeValid();
+        });
+      });
+      [timeFrom, timeTo].forEach(inp => inp.addEventListener('change', () => {
+        chips.forEach(c => c.classList.remove('selected'));
+        checkTimeValid();
+      }));
+      next4.addEventListener('click', () => {
+        state.answers.from = timeFrom.value;
+        state.answers.to = timeTo.value;
+        saveSession();
+        fillSummary();
+        goTo('s5');
+      });
+
+      // ---------- SCREEN 5 : resume ----------
+      function fillSummary() {
+        document.getElementById('sumPlace').textContent = state.answers.place || '—';
+        const d = state.answers.date ? new Date(state.answers.date + 'T00:00:00') : null;
+        document.getElementById('sumDate').textContent = d ? d.toLocaleDateString('fr-FR', {weekday: 'long', day: 'numeric', month: 'long'}) : '—';
+        document.getElementById('sumTime').textContent = (state.answers.from && state.answers.to) ? (state.answers.from + ' – ' + state.answers.to) : '—';
+      }
+      document.getElementById('confirmBtn').addEventListener('click', () => {
+        state.completed = true;
+        state.completedAt = new Date().toISOString();
+        recordScreenTime();
+        saveSession();
+        burstHearts();
+        setTimeout(() => {
+          document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+          document.getElementById('doneScreen').classList.add('active');
+          dotsEl.style.visibility = 'hidden';
+          backBtn.style.visibility = 'hidden';
+        }, 500);
+      });
+
+      // ---------- ADMIN DASHBOARD (secret: tap logo 6x) ----------
+      let tapCount = 0, tapTimer = null;
+      document.getElementById('logo').addEventListener('click', () => {
+        tapCount++;
+        clearTimeout(tapTimer);
+        tapTimer = setTimeout(() => tapCount = 0, 1500);
+        if (tapCount >= 6) {
+          tapCount = 0;
+          openAdmin();
+        }
+      });
+      document.getElementById('adminClose').addEventListener('click', () => {
+        document.getElementById('admin').classList.remove('active');
+      });
+      document.getElementById('resetBtn').addEventListener('click', async () => {
+        const sure = confirm("Supprimer toutes les données enregistrées (ouvertures, sessions, réponses) ? Cette action est irréversible.");
+        if (!sure) return;
+        document.getElementById('adminStats').innerHTML = '<div>Suppression en cours…</div>';
+        document.getElementById('openLogBlock').innerHTML = '';
+        document.getElementById('adminSessions').innerHTML = '';
+        // On empêche toute nouvelle écriture pendant/après la suppression
+        writesDisabled = true;
+        try {
+          const list = await window.storage.list('session:', true);
+          const keys = (list && list.keys) ? list.keys : [];
+          for (const k of keys) {
+            try {await window.storage.delete(k, true);} catch (e) { }
+          }
+          try {await window.storage.delete('open_count', true);} catch (e) { }
+          try {await window.storage.delete('open_log', true);} catch (e) { }
+        } catch (e) { }
+        // Rechargement complet sans recompter cette visite admin comme une ouverture
+        location.href = location.pathname + '?noanalytics=1';
+      });
+      function fmtMs(ms) {
+        const s = Math.round(ms / 1000);
+        if (s < 60) return s + 's';
+        return Math.floor(s / 60) + 'min ' + (s % 60) + 's';
+      }
+      async function openAdmin() {
+        const adminEl = document.getElementById('admin');
+        adminEl.classList.add('active');
+        document.getElementById('adminStats').innerHTML = '<div>Chargement…</div>';
+        document.getElementById('adminSessions').innerHTML = '';
+        if (!FB_CONFIGURED) {
+          document.getElementById('adminStats').innerHTML = '';
+          document.getElementById('adminSessions').innerHTML = `<div class="sess-card" style="border:1px solid #ff8a8a;">
+        ⚠️ <b>Firebase n'est pas encore configuré.</b><br><br>
+        Aucune donnée ne peut être enregistrée pour l'instant. Ouvre le fichier HTML, cherche la ligne
+        <code>const FIREBASE_DB_URL</code> tout en haut du script, et colle l'URL de ta base
+        Realtime Database (voir les instructions juste au-dessus dans le code).
+      </div>`;
+          return;
+        }
+        try {
+          let openCount = '?';
+          try {
+            const oc = await window.storage.get('open_count', true);
+            openCount = oc ? oc.value : '0';
+          } catch (e) { }
+          let openLog = [];
+          try {
+            const ol = await window.storage.get('open_log', true);
+            openLog = ol ? JSON.parse(ol.value) : [];
+          } catch (e) { }
+          if (openLog.length) {
+            const rows = openLog.slice().reverse().map(ts => {
+              const d = new Date(ts);
+              return `<div style="padding:4px 0;border-bottom:1px solid rgba(255,255,255,.08)">${d.toLocaleDateString('fr-FR')} à ${d.toLocaleTimeString('fr-FR')}</div>`;
+            }).join('');
+            document.getElementById('openLogBlock').innerHTML = `
+          <div class="sess-card" style="max-height:180px;overflow-y:auto;">
+            <b>Historique des ouvertures (${openLog.length})</b>
+            ${rows}
+          </div>`;
+          } else {
+            document.getElementById('openLogBlock').innerHTML = '';
+          }
+          const list = await window.storage.list('session:', true);
+          const keys = (list && list.keys) ? list.keys : [];
+          const sessions = [];
+          for (const k of keys) {
+            try {
+              const r = await window.storage.get(k, true);
+              if (r) sessions.push(JSON.parse(r.value));
+            } catch (e) { }
+          }
+          sessions.sort((a, b) => new Date(b.openedAt) - new Date(a.openedAt));
+          const completedCount = sessions.filter(s => s.completed).length;
+          const totalNo = sessions.reduce((a, s) => a + (s.noAttempts || 0), 0);
+
+          document.getElementById('adminStats').innerHTML = `
+        <div><b>${openCount}</b>Ouvertures</div>
+        <div><b>${sessions.length}</b>Sessions</div>
+        <div><b>${completedCount}</b>Terminées</div>
+        <div><b>${totalNo}</b>Clics sur "Non"</div>
+      `;
+
+          if (sessions.length === 0) {
+            document.getElementById('adminSessions').innerHTML = '<p style="opacity:.7">Aucune visite enregistrée pour le moment.</p>';
+          } else {
+            document.getElementById('adminSessions').innerHTML = sessions.map(s => {
+              const opened = new Date(s.openedAt);
+              const totalTime = Object.values(s.screenTimesMs || {}).reduce((a, b) => a + b, 0);
+              return `<div class="sess-card">
+            <b>${s.completed ? '✅ Terminée' : '⏳ En cours'}</b> — ${opened.toLocaleDateString('fr-FR')} à ${opened.toLocaleTimeString('fr-FR')}<br>
+            <b>Appareil:</b> ${escapeHtml(s.device.platform)} · écran ${s.device.screen} · ${s.device.isTouch ? 'tactile' : 'souris'}<br>
+            <b>Navigateur (UA):</b> ${escapeHtml(s.device.userAgent).slice(0, 90)}…<br>
+            <b>Langue:</b> ${escapeHtml(s.device.language)} &nbsp; <b>Connexion:</b> ${escapeHtml(s.device.connection)}<br>
+            <b>Temps total:</b> ${fmtMs(totalTime)}<br>
+            <b>Temps par écran:</b> Q(${fmtMs(s.screenTimesMs.s1 || 0)}) Lieu(${fmtMs(s.screenTimesMs.s2 || 0)}) Date(${fmtMs(s.screenTimesMs.s3 || 0)}) Heure(${fmtMs(s.screenTimesMs.s4 || 0)}) Résumé(${fmtMs(s.screenTimesMs.s5 || 0)})<br>
+            <b>Tentatives sur "Non":</b> ${s.noAttempts || 0}<br>
+            <b>Réponses:</b> Lieu = ${s.answers.place || '—'} · Date = ${s.answers.date || '—'} · Heure = ${(s.answers.from && s.answers.to) ? (s.answers.from + '–' + s.answers.to) : '—'}
+          </div>`;
+            }).join('');
+          }
+        } catch (e) {
+          document.getElementById('adminStats').innerHTML = '<div>Erreur de chargement des données.</div>';
+        }
+      }
+      function escapeHtml(str) {
+        return String(str || '').replace(/[&<>"']/g, m => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[m]));
+      }
+    })();
+  </script>
+</body>
+
+</html>
